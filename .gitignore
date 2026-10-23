@@ -58,3 +58,8 @@ nunit-*.xml
 
 # Local design notes (spec and plan) - not part of the submission
 /docs/superpowers/
+
+# Local SQLite database
+*.db
+*.db-shm
+*.db-wal
