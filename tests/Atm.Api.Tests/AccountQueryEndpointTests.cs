@@ -48,6 +48,18 @@ public class AccountQueryEndpointTests : ApiTestBase
     }
 
     [Test]
+    public async Task GetTransactions_ReturnsCreatedAtAsUtc()
+    {
+        await Client.PostAsJsonAsync("/api/accounts/1/deposits", new { amount = 10m });
+
+        using var json = System.Text.Json.JsonDocument.Parse(
+            await Client.GetStringAsync("/api/accounts/1/transactions"));
+
+        var createdAt = json.RootElement[0].GetProperty("createdAt").GetString();
+        Assert.That(createdAt, Does.EndWith("Z"), "Timestamps must be serialized as UTC so clients convert them correctly.");
+    }
+
+    [Test]
     public async Task GetTransactions_Unknown_Returns404()
     {
         var response = await Client.GetAsync("/api/accounts/999/transactions");

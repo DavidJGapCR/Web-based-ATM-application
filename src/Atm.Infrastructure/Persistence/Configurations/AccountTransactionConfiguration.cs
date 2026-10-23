@@ -14,7 +14,11 @@ internal sealed class AccountTransactionConfiguration : IEntityTypeConfiguration
         builder.Property(t => t.Type).HasConversion<string>().HasMaxLength(20).IsRequired();
         builder.Property(t => t.Amount).IsRequired();
         builder.Property(t => t.BalanceAfter).IsRequired();
-        builder.Property(t => t.CreatedAt).IsRequired();
+        // SQLite stores DateTime as text without a kind; values are always written as UTC,
+        // so mark them as UTC on read (otherwise they serialize without the "Z" suffix).
+        builder.Property(t => t.CreatedAt)
+            .HasConversion(v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc))
+            .IsRequired();
 
         builder.HasOne<Account>()
             .WithMany()
