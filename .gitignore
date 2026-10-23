@@ -55,3 +55,6 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Local design notes (spec and plan) - not part of the submission
+/docs/superpowers/
