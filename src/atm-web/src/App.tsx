@@ -25,6 +25,8 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // Initial load. refresh() only sets state after its requests resolve, so this is not a synchronous update.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void refresh(null)
   }, [refresh])
 
