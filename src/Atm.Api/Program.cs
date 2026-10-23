@@ -1,4 +1,5 @@
 using Atm.Api.Endpoints;
+using Atm.Api.Errors;
 using Atm.Application;
 using Atm.Infrastructure;
 using Scalar.AspNetCore;
@@ -13,11 +14,18 @@ builder.Services
     .AddInfrastructure(connectionString);
 
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddOpenApi();
+
+// Surface request-binding failures (bad JSON, wrong types) to the exception handler
+// in every environment so they become consistent ProblemDetails responses.
+builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
 var app = builder.Build();
 
 await app.Services.ApplyMigrationsAsync();
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
@@ -26,6 +34,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapAccountEndpoints();
+app.MapTransferEndpoints();
 
 app.Run();
 

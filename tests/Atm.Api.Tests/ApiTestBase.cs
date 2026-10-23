@@ -33,6 +33,9 @@ public abstract class ApiTestBase
     protected async Task<List<TransactionDto>> GetTransactionsAsync(int id) =>
         (await Client.GetFromJsonAsync<List<TransactionDto>>($"/api/accounts/{id}/transactions"))!;
 
+    protected Task<HttpResponseMessage> PostRawJsonAsync(string url, string json) =>
+        Client.PostAsync(url, new StringContent(json, System.Text.Encoding.UTF8, "application/json"));
+
     protected static async Task<string?> ReadErrorCodeAsync(HttpResponseMessage response)
     {
         using var json = JsonDocument.Parse(await response.Content.ReadAsStringAsync());

@@ -1,6 +1,9 @@
+using Atm.Api.Contracts;
 using Atm.Api.Errors;
 using Atm.Application.Abstractions;
 using Atm.Application.Accounts;
+using Atm.Application.Commands.Deposit;
+using Atm.Application.Commands.Withdraw;
 using Atm.Application.Queries.GetAccount;
 using Atm.Application.Queries.GetAccounts;
 using Atm.Application.Queries.GetAccountTransactions;
@@ -32,6 +35,22 @@ public static class AccountEndpoints
                 CancellationToken ct) =>
             (await handler.HandleAsync(new GetAccountTransactionsQuery(id), ct)).ToHttpResult(TypedResults.Ok))
             .WithName("GetAccountTransactions");
+
+        group.MapPost("/{id:int}/deposits", async (
+                int id,
+                AmountRequest request,
+                ICommandHandler<DepositCommand, AccountOperationResult> handler,
+                CancellationToken ct) =>
+            (await handler.HandleAsync(new DepositCommand(id, request.Amount), ct)).ToHttpResult(TypedResults.Ok))
+            .WithName("Deposit");
+
+        group.MapPost("/{id:int}/withdrawals", async (
+                int id,
+                AmountRequest request,
+                ICommandHandler<WithdrawCommand, AccountOperationResult> handler,
+                CancellationToken ct) =>
+            (await handler.HandleAsync(new WithdrawCommand(id, request.Amount), ct)).ToHttpResult(TypedResults.Ok))
+            .WithName("Withdraw");
 
         return app;
     }
