@@ -4,7 +4,7 @@ A single-user web ATM with two bank accounts (Checking and Savings). It supports
 
 - **Backend:** .NET 10, ASP.NET Core minimal API, EF Core 10 + SQLite, built as a Clean Architecture solution.
 - **Frontend:** React + TypeScript (Vite).
-- **Tests:** NUnit, covering the domain, application and API layers (65 tests).
+- **Tests:** NUnit, covering the domain, application and API layers (70 tests).
 
 ## Prerequisites
 
@@ -90,7 +90,7 @@ There are two separate channels:
    | InsufficientFunds | withdrawal or transfer larger than the balance | 422 |
    | Conflict | concurrent update still conflicting after one retry | 409 |
 
-2. **Unexpected failures** go to a global `IExceptionHandler`. It logs the exception and returns a 500 without exposing internal details. Malformed request bodies (invalid JSON or wrong types) are returned as 400s.
+2. **Unexpected failures** go to a global `IExceptionHandler`. It logs the exception and returns a 500 without exposing internal details. Malformed requests (invalid JSON, wrong types, missing fields, unsupported content type) and unmatched routes also return ProblemDetails, with the matching 4xx status.
 
 Every error response is an RFC 7807 `application/problem+json` body with a stable `code` field (for example `account.insufficient_funds`) that the frontend can rely on.
 

@@ -15,11 +15,12 @@ public sealed class GlobalExceptionHandler(
     {
         var problem = exception switch
         {
-            // Malformed JSON, wrong types or a missing body.
-            BadHttpRequestException => new ProblemDetails
+            // Malformed JSON, wrong types, missing fields or body, unsupported content type.
+            // Keep the framework's status (400, 415, 413...) rather than flattening it.
+            BadHttpRequestException badRequest => new ProblemDetails
             {
-                Status = StatusCodes.Status400BadRequest,
-                Title = "The request body is invalid.",
+                Status = badRequest.StatusCode,
+                Title = "The request is invalid.",
                 Extensions = { ["code"] = "request.invalid" }
             },
             _ => new ProblemDetails

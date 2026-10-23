@@ -21,11 +21,18 @@ builder.Services.AddOpenApi();
 // in every environment so they become consistent ProblemDetails responses.
 builder.Services.Configure<RouteHandlerOptions>(options => options.ThrowOnBadRequest = true);
 
+// Reject request bodies with missing fields instead of silently defaulting them to 0.
+builder.Services.ConfigureHttpJsonOptions(options =>
+    options.SerializerOptions.RespectRequiredConstructorParameters = true);
+
 var app = builder.Build();
 
 await app.Services.ApplyMigrationsAsync();
 
 app.UseExceptionHandler();
+
+// Bodiless error responses produced by the framework (e.g. unmatched routes) become ProblemDetails too.
+app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
 {
